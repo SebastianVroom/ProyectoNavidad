@@ -1,0 +1,20 @@
+#main article{
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    margin: 25px;
+    height: 250px;
+    width : 350px;
+    padding: 5px;
+}
+#main article ul,h4,a,img{
+    float: left;
+    margin: 5px;
+}
+a{
+    margin: 50px 0 0 50px;
+    color: white;
+}
+#loadinganim{
+    height: 150px;
+    width: 150px;
+}
