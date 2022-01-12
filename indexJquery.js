@@ -51,22 +51,18 @@ class InterfazEnt{
 
         this.element.addEventListener('click',()=>this.expandir())
         this.element.addEventListener('mouseleave',()=>this.retraer())
+
+        this.card=$(this.temas,this.generos,this.enlace)
     }
 
     expandir(){
-        this.temas.style.display='block'
-        this.enlace.style.display = 'block'
-        this.generos.style.display='block'
-        this.element.style.width = '100%'
-        this.element.style.height = `${Math.max(this.temas.offsetHeight,this.generos.offsetHeight,250)}px`
+        this.card.css('display','block')
+        $(this.element).css('width','100%','height',`${Math.max(this.temas.offsetHeight,this.generos.offsetHeight,250)}px`)
     }
 
     retraer(){
-        this.temas.style.display='none'
-        this.enlace.style.display = 'none'
-        this.generos.style.display='none'
-        this.element.style.width = '350px'
-        this.element.style.height = '250px'
+        this.card.css('display','none')
+        $(this.element).css('width','350px','height','250px')
     }
 }
 
@@ -87,41 +83,43 @@ var requestURL = "https://gutendex.com/books"
 var fetching = false
 
 function requestBooks(){
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            let resp = JSON.parse(this.responseText)
-            requestURL = resp['next']
-            for(let lib of resp['results']){
-                gal.addEnt(lib['formats']['image/jpeg'],lib['title'],lib['subjects'],lib['bookshelves'],lib['formats']['text/html'])
-            }
-            fetching = false
-        }else if(this.readyState == 4){
-            fetching = false
-        }
-    };
-    xhttp.open("GET", requestURL, true);
-    xhttp.send();
     fetching = true
+    $('#loadinganim').show()
+    $.ajax(
+        {url:requestURL,
+        type:'GET',
+        dataType:'json'})
+    .done(function(json) {
+        requestURL = json['next']
+        for(let lib of json['results']){
+            gal.addEnt(lib['formats']['image/jpeg'],lib['title'],lib['subjects'],lib['bookshelves'],lib['formats']['text/html'])
+        }       
+    })
+    .always(function () {
+        $('#loadinganim').hide()
+        fetching = false
+    })
 }
 
 function getBackground(){
     let r = randInt(0,256)
     let g = randInt(0,256)
     let b = randInt(0,256)
-    document.body.style.backgroundImage = `url('https://php-noise.com/noise.php?r=${r}&g=${g}&b=${b}')`
+    $.get(`https://php-noise.com/noise.php?r=${r}&g=${g}&b=${b}&json`,function(resp){
+        $('body').css('background-image','url('+resp['uri']+')')
+    })
 }
 
 function randInt(a,b){
     return Math.floor((Math.random() * (b - a)) + a)
 }
 
-window.addEventListener('load',()=>{
+$(document).ready(function(){
     requestBooks()
     getBackground()
 })
 
-window.addEventListener('scroll',()=>{
+$(document).scroll(function(){
     if ((2.5 * window.innerHeight + window.scrollY > document.body.clientHeight) && !fetching){
         requestBooks()
     }
