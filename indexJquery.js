@@ -11,57 +11,44 @@ class Entrada{
 class InterfazEnt{
     constructor(padr,img,title,tema,generos,link){
         this.data = new Entrada(img,title,tema,generos,link)
-        this.element = document.createElement('article')
+        this.element = $('<article>')
 
-        this.container = padr
-        this.container.appendChild(this.element)
+        this.container = $(padr)
+        this.container.append(this.element)
 
-        this.cover = document.createElement('img')
-        this.cover.src = this.data.cover
-        this.element.appendChild(this.cover)
+        this.cover = $('<img>').attr('src',this.data.cover)
+        this.element.append(this.cover)
 
-        this.titulo = document.createElement('h4')
-        this.titulo.innerHTML = this.data.title
-        this.element.appendChild(this.titulo)
+        this.titulo = $(`<h4>${this.data.title}</h4>`)
+        this.element.append(this.titulo)
 
-        this.temas = document.createElement('ul')
-        let tem = '<p>Subjects:</p>'
+        this.temas = $('<ul>').html('<p>Subjects:</p>').css('display','none')
         for (let t of this.data.temas){
-            tem += `<li>${t}</li>`
+            this.temas.append($(`<li>${t}</li>`)) 
         }
-        this.temas.innerHTML = tem
-        this.temas.style.display='none'
-        this.element.appendChild(this.temas)
+        this.element.append(this.temas)
 
-        this.generos = document.createElement('ul')
-        let gen = '<p>Genre:</p>'
+        this.generos = $('<ul>').html('<p>Genre:</p>').css('display','none')
         for (let g of this.data.generos){
-            gen += `<li>${g}</li>`
+            this.generos.append($(`<li>${g}</li>`)) 
         }
-        this.generos.innerHTML = gen
-        this.generos.style.display='none'
-        this.element.appendChild(this.generos)
+        this.element.append(this.generos)
 
-        this.enlace = document.createElement('a')
-        this.enlace.innerHTML = 'Read online'
-        this.enlace.href = this.data.readLink
-        this.enlace.style.display = 'none'
-        this.enlace.target = '_blank'
-        this.element.appendChild(this.enlace)
+        this.enlace = $('<a>Read online</a>').attr({href:this.data.readLink,target:'_blank'}).css('display','none')
+        this.element.append(this.enlace)
 
-        this.element.addEventListener('click',()=>this.expandir())
-        this.element.addEventListener('mouseleave',()=>this.retraer())
+        this.element.click(()=>this.expandir()).mouseleave(()=>this.retraer())
 
-        this.card=$(this.temas,this.generos,this.enlace)
+        this.card = this.temas.add(this.generos).add(this.enlace)
     }
 
     expandir(){
-        this.card.css('display','block')
+        this.card.fadeIn()
         $(this.element).css('width','100%','height',`${Math.max(this.temas.offsetHeight,this.generos.offsetHeight,250)}px`)
     }
 
     retraer(){
-        this.card.css('display','none')
+        this.card.hide()
         $(this.element).css('width','350px','height','250px')
     }
 }
